@@ -1,0 +1,124 @@
+\section{Introduction}
+\label{sec:intro}
+
+%\input{sections/outline}
+
+Fusion energy research is focused on understanding the science needed to develop energy sources based on the controlled fusion of light atomic nuclei. Fusion energy is an active area of research that promises to provide large amounts of clean energy.
+One promising avenue for achieving fusion energy is using a machine called a tokamak. A tokamak confines a plasma using magnetic fields within a torus.
+Scientists around the world are actively researching high-fidelity models to predict the performance and behavior of fusion in tokamak devices. Significant efforts are currently underway to plan experiments on the International Thermonuclear Experimental Reactor (ITER) tokamak under construction in France.
+ITER, and follow-on devices, will operate in physics regimes not achieved by any current or past experiments, making advanced and predictive numerical simulation critical for success.
+
+
+The tokamak contains many magnetic coils producing a strong magnetic field that confines the charged particles within the plasma. One set of magnetic coils generates an intense  \emph{torroidal} field, in the direction around the torus. A second set of coils generates a magnetic \emph{poloidal} field in the direction around a cross-section of the torus. These two fields result in a twisted magnetic field that twists the plasma, resulting in confinement.  Additional coils are used to drive the shape of the plasma during confinement.
+
+The time-varying behavior of the magnetic fields is complex and vital to the performance of the tokamak. This makes analysis tools for understanding the dynamic nature of the magnetic field critical. The complexity of the three-dimensional, periodic magnetic field lines makes direct visualization difficult.
+Because the field lines are periodic, the complexity can be reduced by making use of a recurrence or \poincare map. This technique reduces the dimension of each field line from three down to two by intersecting the periodic orbit with a lower-dimensional subspace (called the \poincare section).
+Here we intersect each field line with a plane to create a sequence of points. The pattern produced by each field line provides valuable insight into the topology of the complex magnetic field lines inside the plasma.
+
+Proper characterization of the magnetic field requires a large number of orbits to a large number of field lines. It is common to create \poincare maps containing tens of thousands of field lines, each consisting of thousands of orbits.
+In practice, the field lines are computed using particle advection to trace the path of massless particles through the magnetic field. Calculating the orbit of each field line consists of taking a large number of advection steps using a numerical solver. To ensure the accuracy of such long field lines, an appropriately small step size must be used for the numerical solver. This in turn results in a large number of solves for each orbit. As an example, for an orbit that takes $500$ advection steps, computing $1000$ orbits results in 500,000 advection steps for each field line. For 50,000 field lines, this results in a total of $2.5 x 10^{10}$ advection steps.
+
+In this short paper, we describe a collaboration among computer science and physics researchers to provide a significant reduction in the time required to perform \poincare analysis on the magnetic fields in plasma simulations using the X-Point Gyrokinetic Code (XGC)~\cite{HAGER2016644} code.  Before the collaboration began, the tool used by the physicists to perform this analysis took up to several hours. Because of this, the amount of analysis that can be performed was very limited. Further, because the magnetic field evolves over the course of the simulation, a detailed analysis of the time-varying evolution was not possible.
+This collaboration resulted in a new \poincare tool being developed using \vtkm \cite{moreland2016vtk}, a visualization toolkit that provides portability across CPUs and GPUs.
+This new tool was run on four different workloads using both CPUs and GPUs on a modern supercomputer. It achieved time speedups of between $5.8\times$ and $8.9\times$ on the CPU and between $11.4\times$ and $15.4\times$ on the GPU. In addition, because the new \poincare\ tool required fewer resources, the cost of running was significantly lower. The cost savings for the four workloads were between $14.4\times$ and $22.4\times$ for the CPUs and between $58.4\times$ and $77.1\times$ for the GPU.
+
+One of the major challenges in this collaboration was ensuring that the complex representation in the simulation code of the magnetic field was accurately conveyed in the new visualization tool.
+The \vtkm accelerated tool has made it possible for \poincare analysis to be performed in situ for large-scale simulations running on supercomputers located at the Oak Ridge Leadership Computing Facility (OLCF)~\cite{Suchyta2022}.
+
+\begin{comment}
+acceleration of the 
+
+The fusion scientists with whom we are collaborating had a tool for generating \poincare maps that ran on multi-core CPUs.  Generating \poincare map from a single timestep in a simulation using $50,000$ field lines of $3000$ orbits took about $2.5$ hours. \dave{Lookup the numbers from the summit runs.}
+Because of this cost, \poincare map analysis was done infrequently.
+
+The resulting field lines are intersected with the \poincare section to produce the result.
+
+
+
+
+
+
+
+
+The behavior and evolution of the magnetic fields in a tokamak are complex, and its control is critical for performance making analysis tools for 
+Because of this, analysis tools for understanding the dynamic nature of the magnetic field are critical.
+The complexity of the three-dimensional magnetic field lines makes analysis and visualization difficult.
+Because the field lines are periodic, this complexity can be reduced by using a \poincare magnetic field-line puncture map~\cite{poincare}. 
+The \poincare map is the intersection of a field line with a lower-dimensional subspace (called the \poincare section).
+In our case, the \poincare section is a two-dimensional plane that is perpendicular to the axis of the tokamak.
+Given a set of magnetic field lines, the \poincare map, i.e., intersection of the magnetic field lines with the plane, provides a concise 
+representation of the magnetic field that is easier to understand and analyze.
+Figure~\ref{fig:poincare} shows some examples of \poincare plots.
+
+In practice, the \poincare map is generated by creating a large number of field lines and plotting each intersection, or puncture, with the plane.
+After a sufficient number of punctures have been collected, patterns in the map characterize the features in the magnetic field.
+The field lines are computed by modeling massless particles that follow magnetic field lines.
+These massless particles can follow magnetic field lines by advecting them in the direction of the magnetic field.
+The intersections generated from a single particle characterize the features of the magnetic surface at that position.
+The particles are advected using a differential equation solver, such as the 4$^{\text{th}}$ order Runge-Kutta scheme.
+
+In practice, proper characterization of the magnetic field requires a large number of initial positions (typically tens of thousands), each of which typically results in between 1000 and 3000 intersections with each intersection coming from following a field line all the way through the tokamak's torus.
+Because of this, the computation of a \poincare map can be very expensive.
+The WDMApp team has a \poincare map code that runs on CPUs and takes several hours for the largest analysis runs. 
+%Because of this cost, the generation \poincare maps required careful planning.
+The high cost of the analysis was due to two main factors. First, the large numbers of particles and intersections required previously mentioned, and second, the complexity of the magnetic field calculation.  In many applications of particle advection, the vector field is calculated at the nodes of each cell in the mesh. Linear interpolation within the cell is used to evaluate the magnetic field for the particle being advected. Because of the large number of advection steps required for each particle in the \poincare map, small errors can rapidly accumulate. These errors are compounded by the fact that the evaluation of the magnetic field requires a complex set of calculations requiring high-order interpolation of several quantities.
+
+Using \vtkm we can significantly accelerate the computation of \poincare maps using the parallelism available on GPUs. Because the trajectory of each particle is completely independent, the task can be parallelized over each particle. Using this approach, a \poincare map can be computed in under $3$ minutes. The wall-clock time for a typical WDMApp simulation step is between $1.5$ and $2$ minutes, which means that \poincare maps can be computed in situ in nearly real-time.
+When WDMApp is run, the workflow control system, EFFIS~\cite{Suchyta2022:effis}, allocates an additional 1 to 2 nodes for the \poincare map analysis. As a simulation step completes, EFFIS launches a \poincare analysis task on GPUs in the node in a round-robin fashion. This allows asynchronous analysis to be performed on the additional nodes while the simulation is running. Figure~\ref{fig:poincare} shows \poincare maps from two different timesteps of a simulation run at the OLCF.
+Real-time generation of \poincare maps provides the WDMApp team with unprecedented capability for analysis of magnetic fields in fusion simulations.
+
+Please follow the steps outlined in this document very carefully when
+submitting your manuscript to Eurographics.
+
+You may as well use the \LaTeX\ source as a template to typeset your own
+paper. In this case we encourage you to also read the \LaTeX\ comments
+embedded in the document.
+
+
+\noindent Long captions should be set as in Figure~\ref{fig:ex1} or
+Figure~\ref{fig:ex3}.
+
+\begin{figure}[htb]
+   % an empty figure just consisting of the caption lines
+   \caption{\label{fig:ex1}
+     'Empty' figure only to serve as an example of long caption requiring 
+     more than one line. It is not typed centered but aligned on both sides.}
+\end{figure}
+
+\noindent
+Figures which need the full textwidth can be typeset as Figure~\ref{fig:ex3}.
+
+
+
+All graphics should be centered.
+
+%%%
+%%% Figure 1
+%%%
+\begin{figure}[htb]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=.8\linewidth]{sampleFig}
+  % replacing the above command with the one below will explicitly set
+  % the bounding box of the PS figure to the rectangle (xl,yl),(xh,yh).
+  % It will also prevent LaTeX from reading the PS file to determine
+  % the bounding box (i.e., it will speed up the compilation process)
+  % \includegraphics[width=.95\linewidth, bb=39 696 126 756]{sampleFig}
+  %
+  \parbox[t]{.9\columnwidth}{\relax
+           For all figures please keep in mind that you \textbf{must not}
+           use images with transparent background! 
+           }
+  %
+  \caption{\label{fig:firstExample}
+           Here is a sample figure.}
+\end{figure}
+
+
+List all bibliographical references in 9-point Times, single-spaced, at the
+end of your paper in alphabetical order. When referenced in the text, enclose
+the citation index in square brackets, for example~\cite{Lous90}. Where
+appropriate, include the name(s) of editors of referenced books.
+
+\end{comment}

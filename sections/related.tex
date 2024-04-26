@@ -1,0 +1,28 @@
+\vspace{-.1in}
+\section{Related Work}
+\label{sec:related}
+
+\subsection{\poincare Maps}
+\poincare maps are an important tool developed for the study of dynamical systems. One of the key advantages is that it provides a dimension reduction to study periodic systems~\cite{morrison2000magnetic}. In the case of our fusion example, this reduction is from 3D to 2D.  L{\"o}effelmann et al.~\cite{Loeffelmann-1997-VPM} provide a summary of the usage of \poincare maps for visualization across a variety of application areas and demonstrate their usefulness in flow analysis.
+\poincare maps have been applied to fusion in a number of works, including the following~\cite{Sanderson2010, Sanderson2012understanding, Tricoche2011 }.
+%Techniques for computing \poincare maps will be discussed in the following section.
+
+
+\subsection{Streamlines and Particle Advection}
+
+A widely used visualization algorithm for flow fields is a technique called streamlines \cite{VTKTextbook}.
+The technique starts with a velocity vector field representing the flow of a fluid at each point in the domain, which is a common output from computational fluid dynamics simulations.
+This fluid is visually represented by one or more curves that trace the trajectory of that part of the flow.
+This is modeled and computed as a massless particle instantaneously moving with the velocity determined by the field at the particle's position.
+The particle is placed at a seed point and then is advected by pushing it by the vector field.
+The computation (described in more detail in Section~\ref{sec:method}) solves a differential equation to find the curve that is tangent to the vector field everywhere.
+
+Although these traces of advected particles can be visualized directly as streamlines, they also form the basis of numerous visualization algorithms, some of which require the advection of a great many particles \cite{Hultquist1992,Guo2016}.
+Because particle advection is the greatest computational cost of these algorithms, much research has been invested in optimizing this process \cite{Zhang2018, Yenpure2023}.
+The work in this paper leverages the particle advection provided by the VTK-m library \cite{moreland2016vtk}.
+VTK-m provides a flexible particle advection algorithm that is optimized for a variety of processors \cite{Pugmire2018}.
+
+Technically, a magnetic field is not a flow field; it does not describe the movement of matter.
+However, we are interested in extracting magnetic field lines: curves that are tangent to the magnetic field everywhere.
+This is the same property a particle advection trajectory has to its velocity field, and thus it is valid to extract these magnetic field lines by treating magnetism as a flow and leveraging the aforementioned particle advection algorithms.
+This paper often refers to flowing particles even though that does not match the physical process.

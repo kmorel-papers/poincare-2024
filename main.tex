@@ -1,0 +1,225 @@
+% ---------------------------------------------------------------------------
+% Author guideline and sample document for EG publication using LaTeX2e input
+% D.Fellner, v1.20, Jan 18, 2023
+
+\documentclass{egpubl}
+\usepackage{eurovis2024}
+\usepackage{comment}
+\usepackage{amsmath}
+
+% --- for  Annual CONFERENCE
+% \ConferenceSubmission   % uncomment for Conference submission
+% \ConferencePaper        % uncomment for (final) Conference Paper
+% \STAR                   % uncomment for STAR contribution
+% \Tutorial               % uncomment for Tutorial contribution
+% \ShortPresentation      % uncomment for (final) Short Conference Presentation
+% \Areas                  % uncomment for Areas contribution
+% \Education              % uncomment for Education contribution
+% \Poster                 % uncomment for Poster contribution
+% \DC                     % uncomment for Doctoral Consortium
+%
+% --- for  CGF Journal
+% \JournalSubmission    % uncomment for submission to Computer Graphics Forum
+% \JournalPaper         % uncomment for final version of Journal Paper
+%
+% --- for  CGF Journal: special issue
+% \SpecialIssueSubmission    % uncomment for submission to , special issue
+%\SpecialIssuePaper         % uncomment for final version of Computer Graphics Forum, special issue
+%                          % EuroVis, SGP, Rendering, PG
+% --- for  EG Workshop Proceedings
+% \WsSubmission      % uncomment for submission to EG Workshop
+ \WsPaper           % uncomment for final version of EG Workshop contribution
+% \WsSubmissionJoint % for joint events, for example ICAT-EGVE
+% \WsPaperJoint      % for joint events, for example ICAT-EGVE
+% \Expressive        % for SBIM, CAe, NPAR
+% \DigitalHeritagePaper
+% \PaperL2P          % for events EG only asks for License to Publish
+
+% --- for EuroVis 
+% for full papers use \SpecialIssuePaper
+% \STAREurovis   % for EuroVis additional material 
+% \EuroVisPoster % for EuroVis additional material 
+% \EuroVisShort  % for EuroVis additional material
+% \MedicalPrize  % uncomment for Medical Prize (Dirk Bartz) contribution, since 2021 part of EuroVis
+
+% Licences: for CGF Journal (EG conf. full papers and STARs, EuroVis conf. full papers and STARs, SR, SGP, PG)
+% please choose the correct license
+%\CGFStandardLicense
+\CGFccby
+%\CGFccbync
+%\CGFccbyncnd
+
+
+% !! *please* don't change anything above
+% !! unless you REALLY know what you are doing
+% ------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{dfadobe}  
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{subfigure}
+\usepackage{xspace}
+\usepackage{booktabs}
+
+
+\usepackage{cite}  % comment out for biblatex with backend=biber
+% ---------------------------
+%\biberVersion
+\BibtexOrBiblatex
+%\usepackage[backend=biber,bibstyle=EG,citestyle=alphabetic,backref=true]{biblatex} 
+%\addbibresource{egbibsample.bib}
+% ---------------------------  
+\electronicVersion
+\PrintedOrElectronic
+% for including postscript figures
+% mind: package option 'draft' will replace PS figure by a filename within a frame
+\ifpdf \usepackage[pdftex]{graphicx} \pdfcompresslevel=9
+\else \usepackage[dvips]{graphicx} \fi
+
+\usepackage{egweblnk}
+\newcommand*{\vtkm}{\mbox{VTK-m}\xspace}
+\newcommand{\poincare}{Poincar\'{e}\xspace}
+
+\usepackage{xcolor}
+
+\newcommand\dave[1] {\textcolor{red}{\textbf{Dave: #1}}}
+
+\definecolor{authora}{RGB}{105, 41, 197}
+\newcommand*{\ken}[1]{\textcolor{authora}{\textbf{Ken: #1}}}
+
+% end of prologue
+
+\title {Performance Improvements of \poincare\ Analysis for Exascale Fusion Simulations}
+
+% for anonymous conference submission please enter your SUBMISSION ID
+% instead of the author's name (and leave the affiliation blank) !!
+% for final version: please provide your *own* ORCID in the brackets following \orcid; see https://orcid.org/ for more details.
+\author[D. Pugmire et al.]
+{\parbox{\textwidth}
+{
+\centering 
+D. Pugmire$^{1}$\orcid{0000-0003-0647-2634},
+J. Y. Choi$^{1}$\orcid{0000-0002-6459-6152},
+S. Klasky$^{1}$\orcid{0000-0003-3559-5772},
+K. Moreland$^{1}$\orcid{0000-0002-7051-3288},
+E. Suchyta$^{1}$\orcid{0000-0002-7047-9358},
+T. M. Athawale$^{1}$\orcid{0000-0003-3163-6274},
+Z. Wang$^{1}$\orcid{0000-0003-1123-9925},
+C.-S. Chang$^{2}$\orcid{0000-0002-3346-5731},
+S.-H. Ku$^{2}$\orcid{0000-0002-9964-1208}, and
+R. Hager$^{2}$\orcid{0000-0002-4624-3150}
+}
+\\
+{\parbox{\textwidth}{
+\centering
+$^1$Oak Ridge National Laboratory, USA\\
+$^2$Princeton Plasma Physics Laboratory, USA
+}
+}
+}
+
+% ------------------------------------------------------------------------
+
+% if the Editors-in-Chief have given you the data, you may uncomment
+% the following five lines and insert it here
+%
+% \volume{36}   % the volume in which the issue will be published;
+% \issue{1}     % the issue number of the publication
+% \pStartPage{1}      % set starting page
+
+%-------------------------------------------------------------------------
+\begin{document}
+
+% uncomment for using teaser
+% \teaser{
+%  \includegraphics[width=0.9\linewidth]{eg_new}
+%  \centering
+%   \caption{New EG Logo}
+% \label{fig:teaser}
+%}
+
+\maketitle
+%-------------------------------------------------------------------------
+\begin{abstract}
+Understanding the time-varying magnetic field in a fusion device is critical for the successful design and construction of clean-burning fusion power plants. \poincare analysis provides a powerful method for the visualization of magnetic fields in fusion devices. However, \poincare plots can be very computationally expensive making it impractical, for example, to generate these plots in situ during a simulation.
+In this short paper, we describe a collaboration among computer science and physics researchers to develop a new \poincare tool that provides a significant reduction in the time to generate analysis results. \\
+%Leave one blank line after the abstract, then add the subject categories according to the ACM Classification Index 
+%-------------------------------------------------------------------------
+%  ACM CCS 1998
+%  (see https://www.acm.org/publications/computing-classification-system/1998)
+% \begin{classification} % according to https://www.acm.org/publications/computing-classification-system/1998
+% \CCScat{Computer Graphics}{I.3.3}{Picture/Image Generation}{Line and curve generation}
+% \end{classification}
+%-------------------------------------------------------------------------
+%  ACM CCS 2012
+%   (see https://www.acm.org/publications/class-2012)
+%The tool at \url{http://dl.acm.org/ccs.cfm} can be used to generate
+% CCS codes.
+%Example:
+% \begin{CCSXML}
+% <ccs2012>
+% <concept>
+% <concept_id>10010147.10010371.10010352.10010381</concept_id>
+% <concept_desc>Computing methodologies~Collision detection</concept_desc>
+% <concept_significance>300</concept_significance>
+% </concept>
+% <concept>
+% <concept_id>10010583.10010588.10010559</concept_id>
+% <concept_desc>Hardware~Sensors and actuators</concept_desc>
+% <concept_significance>300</concept_significance>
+% </concept>
+% <concept>
+% <concept_id>10010583.10010584.10010587</concept_id>
+% <concept_desc>Hardware~PCB design and layout</concept_desc>
+% <concept_significance>100</concept_significance>
+% </concept>
+% </ccs2012>
+% \end{CCSXML}
+%
+% \ccsdesc[300]{Computing methodologies~Collision detection}
+% \ccsdesc[300]{Hardware~Sensors and actuators}
+% \ccsdesc[100]{Hardware~PCB design and layout}
+%
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10003120.10003145.10003147.10010364</concept_id>
+       <concept_desc>Human-centered computing~Scientific visualization</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10003120.10003145.10003146</concept_id>
+       <concept_desc>Human-centered computing~Visualization techniques</concept_desc>
+       <concept_significance>300</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10010405.10010432.10010441</concept_id>
+       <concept_desc>Applied computing~Physics</concept_desc>
+       <concept_significance>100</concept_significance>
+       </concept>
+ </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Human-centered computing~Scientific visualization}
+\ccsdesc[300]{Human-centered computing~Visualization techniques}
+\ccsdesc[100]{Applied computing~Physics}
+
+\printccsdesc   
+\end{abstract}  
+
+\input{sections/intro}
+\input{sections/related}
+\input{sections/method}
+\input{sections/results}
+\input{sections/conclusion}
+\input{sections/ack}
+%-------------------------------------------------------------------------
+% bibtex
+\bibliographystyle{eg-alpha-doi} 
+\bibliography{references}       
+
+% biblatex with biber
+% \printbibliography                
+
+\end{document}
+

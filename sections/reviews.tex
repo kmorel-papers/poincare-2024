@@ -1,0 +1,42 @@
+In Section 3.2.
+“Algoritm 3.1” shoud be “Algorithm 1”
+DONE
+
+In Section 3.3
+I assume that something is missing in the equation “B = ∇×(A∥B0/|B0|.”
+
+
+
+
+ In the methodology, it does not become clear what leads to the speedup of the
+    proposed methods compared with the baseline until the late part of this section.
+    In the evaluation, it is shown that there is a significant speed-up, but given the
+    max-length of the paper, this should be more explicitly mentioned maybe even in
+    the Introduction.
+    I also wondered what the reason was for running the XGC implementation only on the
+    CPU, while the VTK-m implementation was tested on the CPU and GPU.
+    The last section is currently missing a conclusion that summarizes again what the
+    contributions are.
+
+
+
+comments in the final submission form
+
+Understanding the time-varying magnetic field in a fusion device is critical for the successful design and construction of clean-burning fusion power plants. Poincaré analysis provides a powerful method for the visualization of magnetic fields in fusion devices. However, Poincaré plots can be very computationally expensive making it impractical, for example, to generate these plots in situ during a simulation. In this short paper, we describe a collaboration among computer science and physics researchers to develop a new Poincaré tool that provides a significant reduction in the time to generate analysis results.
+
+
+
+Thanks to the reviewers for their thoughtful reviews and suggestions for improving the paper.
+
+Reviewer 1.
+Fixed the reference to Algorithm 1.
+Fixed the missing ")" in the equation for "B"
+Added text in section 3.3 describing the challenges of implementing field evaluation and the collaboration that occurred with the physics team.
+
+Reviewer 2.
+Added mention of the speed and cost improvements into the introduction.
+Clarified the reason that the XGC implementation was only run on the CPUs. (The simulation code runs on the GPUs, but the analysis code is only implemented on the CPU).
+Renamed Section 5 to "Summary and Future Work" which includes a discussion of the contributions of the paper and the collaboration that occurred between computer scientists and physicists.
+
+
+
